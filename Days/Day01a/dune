@@ -1,0 +1,3 @@
+(executable
+ (name Day01a)
+ (libraries hardcaml))
