@@ -3,14 +3,16 @@ open Hardcaml
 open Signal
 
 let day01a () =
+  let clk = input "CLK" 1 in
   let sw1 = input "SW1" 1 in
   let sw2 = input "SW2" 1 in
   let sw3 = input "SW3" 1 in
   let sw4 = input "SW4" 1 in
-  let value_1 = Signal.concat_msb [ sw4; sw3; sw2; sw1 ] in
-  let value_2 = Signal.concat_msb [ sw2; sw3; sw4; sw1 ] in
+  let value_1 = UART_Decoder.UART_Decoder.create {clk; rst=sw1} in
+  let value_2 = Signal.concat_msb [ sw4; sw3; sw2; sw1 ] in
+  
 
-  let s1_A_G = SS_Display.SS_Display.create {value=value_1} in
+  let s1_A_G = SS_Display.SS_Display.create {value=(Signal.select value_1.counter 24 21)} in
   let s2_A_G = SS_Display.SS_Display.create {value=value_2} in
   
   

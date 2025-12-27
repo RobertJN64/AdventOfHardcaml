@@ -32,7 +32,7 @@ Setup a python virtual enviroment and install apio with `pip install --force-rei
 
 Note: if using WSL, pass through the device using `usbipd attach --wsl --busid=`. This needs to be re-run after each device re-connection.
 
-Run `dune build` and `dune exec ./Days/Day01a/Day01a_v.exe` replacing the day number as needed. This will generator the `top.v` file needed inside the `verilog_build` folder.
+Run `dune build` and `dune exec ./Days/Day01a/Day01a_v.exe` replacing the day number as needed. This will generate the `top.v` file needed inside the `verilog_build` folder.
 
 Flashing:
 ```cmd
