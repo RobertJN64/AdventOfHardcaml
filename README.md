@@ -5,6 +5,14 @@ Hardcaml solutions for Advent of Code 2025, targeted for an iCE40 FPGA.
 Solutions:
  - DayXX Part 1 and Part 2
 
+## Setup
+
+```
+opam switch 4.14.1
+eval $(opam env)
+opam install hardcaml.v0.16.0
+opam install hardcaml_waveterm
+```
 
 ## Files
 

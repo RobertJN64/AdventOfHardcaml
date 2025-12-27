@@ -11,4 +11,4 @@
 (executable
  (name Day01a_tb)
  (modules Day01a_tb)
- (libraries hardcaml Day01a))
+ (libraries hardcaml Day01a hardcaml_waveterm))
