@@ -1,3 +1,14 @@
-(executable
+(library
  (name Day01a)
+ (modules Day01a)
  (libraries hardcaml AdventLib))
+
+(executable
+ (name Day01a_v)
+ (modules Day01a_v)
+ (libraries hardcaml Day01a))
+
+(executable
+ (name Day01a_tb)
+ (modules Day01a_tb)
+ (libraries hardcaml Day01a))
