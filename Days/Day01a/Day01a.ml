@@ -5,8 +5,8 @@ open Signal
 let day01a () =
   let clock = input "clock" 1 in
   let reset = input "reset" 1 in
-  let rx = input "RX" 1 in
-  let value_1 = (UART_Decoder.UART_Decoder.create {clock; reset}).counter -- "auto_counter" in
+  let rx = input "rx" 1 in
+  let value_1 = (Counter.Counter.create {clock; reset}).counter -- "auto_counter" in
   let value_2 = Signal.concat_msb [ rx; rx; rx; rx ] -- "manual_counter" in
 
   let s1_A_G = SS_Display.SS_Display.create {value=(Signal.select value_1 24 21)} in

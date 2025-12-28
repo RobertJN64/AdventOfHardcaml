@@ -1,3 +1,5 @@
 (library
  (name AdventLib)
- (libraries hardcaml))
+ (libraries hardcaml)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))

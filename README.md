@@ -8,10 +8,16 @@ Solutions:
 ## Setup
 
 ```
-opam switch 4.14.1
+opam switch 5.3.0
 eval $(opam env)
-opam install hardcaml.v0.16.0
+opam install hardcaml.v0.17.1
 opam install hardcaml_waveterm
+opam install ppx_hardcaml
+```
+
+For development: 
+```
+opam install ocaml-lsp-server ocamlformat
 ```
 
 ## Files
