@@ -9,20 +9,30 @@ let () =
 
   let out_chan = open_out "waves.vcd" in
   let sim = Vcd.wrap out_chan sim in
-  
+  let rx = Cyclesim.in_port sim "rx" in
+
+  let set rx_val =
+    rx := Bits.of_int ~width:1 rx_val;
+  in
+
+  set 1;
   Cyclesim.reset sim;
+  Cyclesim.cycle sim;
+  Cyclesim.cycle sim;
+  set 0;
+
   for _ = 0 to 10000 do
     Cyclesim.cycle sim;
   done;
 
   (* Display waveform in terminal *)
-  let rule = Display_rule.[
+  (* let rule = Display_rule.[
     Names {names =[Port_name.of_string "clock"]; wave_format=Some(Wave_format.Bit); alignment=Text_alignment.Left};
     Names {names =[Port_name.of_string "reset"]; wave_format=Some(Wave_format.Bit); alignment=Text_alignment.Left};
     Names {names =[Port_name.of_string "auto_counter"]; wave_format=Some(Wave_format.Int); alignment=Text_alignment.Left};
     Names {names =[Port_name.of_string "manual_counter"]; wave_format=Some(Wave_format.Int); alignment=Text_alignment.Left}
-  ] in
-  Waveform.print ~display_rules:rule waves;
+  ] in *)
+  Waveform.print ~wave_width:1 ~display_width:150 waves;
   
   close_out out_chan
 
