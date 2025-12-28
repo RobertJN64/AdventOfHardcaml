@@ -11,15 +11,29 @@ let () =
   let sim = Vcd.wrap out_chan sim in
   let rx = Cyclesim.in_port sim "rx" in
 
-  let set rx_val =
-    rx := Bits.of_int ~width:1 rx_val;
+  let serial_bit_cycles = 217 in
+
+  let delay_serial () =
+    for _ = 1 to serial_bit_cycles do
+      Cyclesim.cycle sim;
+    done
   in
 
-  set 1;
+  let send_serial_packet byte =
+    let bits = List.init 8 (fun i -> (byte lsr i) land 1) in
+    rx := Bits.of_int ~width:1 0;
+    delay_serial ();
+    List.iter (fun b ->
+      rx := Bits.of_int ~width:1 b;
+      delay_serial ();
+    ) bits;
+    rx := Bits.of_int ~width:1 1;
+    delay_serial ();
+  in
+
   Cyclesim.reset sim;
   Cyclesim.cycle sim;
-  Cyclesim.cycle sim;
-  set 0;
+  send_serial_packet 0x5A;
 
   for _ = 0 to 10000 do
     Cyclesim.cycle sim;

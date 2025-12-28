@@ -18,7 +18,7 @@ let day01a () =
   Circuit.create_exn
     ~name:"solution"
     [
-      output "ss1_A_G" Signal.gnd;
+      output "ss1_A_G" udout.rx_byte;
       output "ss2_A_G" udout.rx_strobe;
     ]
     

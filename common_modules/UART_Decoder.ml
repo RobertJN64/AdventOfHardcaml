@@ -28,29 +28,44 @@ module UART_Decoder = struct
 
   let create ({clock; reset; rx} : _ I.t) =
     let open Always in
+    let bit_timer_max = 217 in
+    let bit_timer_offset = 109 in (* half of max to sample in middle of byte*)
+    let bit_timer_width = 8 in
+    let bit_counter_max = 8 in
+    let bit_counter_width = 4 in
+    let rx_byte_width = 8 in
+
     let spec = Reg_spec.create ~clock ~reset () in
-    let bit_counter = Variable.reg spec ~width:4 in
+    let bit_counter = Variable.reg spec ~width:bit_counter_width in (* number of bits rcv in current packet *)
     let _ = bit_counter.value -- "bit_counter" in
+    let bit_timer = Variable.reg spec ~width:bit_timer_width in (* triggers sampling in the middle of a packet *)
+    let _ = bit_timer.value -- "bit_timer" in
+
+    let rx_byte = Variable.reg spec ~width:rx_byte_width in
     
 
     let sm = State_machine.create (module States) spec in
     compile [ sm.switch [
       ( Idle, [
-        unless rx [sm.set_next Offset_Start; bit_counter <-- zero 4]
+        unless rx [sm.set_next Offset_Start; bit_counter <-- zero bit_counter_width; bit_timer <-- zero bit_timer_width]
         ]);
-      ( Offset_Start, [sm.set_next RCV_Bit]);
-      ( RCV_Bit, [if_ (bit_counter.value ==: Signal.of_int ~width:4 8)
-          [sm.set_next Done]
-          [bit_counter <-- bit_counter.value +: Signal.one 4]
+      ( Offset_Start, [
+        if_ (bit_timer.value ==: of_int ~width:bit_timer_width bit_timer_offset) (* if the bit timer triggers *)
+          [sm.set_next RCV_Bit; bit_timer <-- zero bit_timer_width] (* goto RCV_Bit *)
+          [bit_timer <-- bit_timer.value +: one bit_timer_width] (* else, advance the bit timer *)
         ]);
-      ( Done, [sm.set_next Done])
+      ( RCV_Bit, [
+        if_ (bit_timer.value ==: of_int ~width:bit_timer_width bit_timer_max) (* if the bit timer triggers *)
+          [bit_timer <-- zero bit_timer_width; rx_byte <-- rx @: select rx_byte.value 7 1; (* zero out the bit timer, shift in one bit *)
+            if_ (bit_counter.value ==: of_int ~width:bit_counter_width bit_counter_max) (* if on the final bit *)
+              [sm.set_next Done] (* goto Done *)
+              [bit_counter <-- bit_counter.value +: one bit_counter_width] (* else, advance the bit counter *)
+          ]
+          [bit_timer <-- bit_timer.value +: one bit_timer_width] (* else, advance the bit timer *)
+        ]);
+      ( Done, [sm.set_next Done]) (* TODO - leave the done state *)
     ]];
 
-    let _rx = rx in
-    
-    let counter_next = Signal.wire 25 in
-    let counter = Signal.reg spec counter_next in
-    let () = Signal.assign counter_next Signal.(counter +: (Signal.of_int ~width:25 1)) in
-    { O.rx_byte=counter; O.rx_strobe=sm.is Done }
+    { O.rx_byte=rx_byte.value; O.rx_strobe=sm.is Done }
 
 end
