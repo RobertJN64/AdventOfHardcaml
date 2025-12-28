@@ -7,19 +7,18 @@ let day01a () =
   let reset = input "reset" 1 in
   let rx = input "rx" 1 in
 
-  (* let value_1 = (Counter.Counter.create {clock; reset}).counter -- "auto_counter" in
-  let value_2 = Signal.concat_msb [ rx; rx; rx; rx ] -- "manual_counter" in
-
-  let s1_A_G = SS_Display.SS_Display.create {value=(Signal.select value_1 24 21)} in
-  let s2_A_G = SS_Display.SS_Display.create {value=value_2} in *)
-
   let udout = UART_Decoder.UART_Decoder.create {clock; reset; rx} in
+  let active_byte = udout.rx_byte -- "serial_byte" in
+
+  let s1_A_G = SS_Display.SS_Display.create {value=(select active_byte 7 4)} in
+  let s2_A_G = SS_Display.SS_Display.create {value=(select active_byte 3 0)} in
+
   
   Circuit.create_exn
     ~name:"solution"
     [
-      output "ss1_A_G" udout.rx_byte;
-      output "ss2_A_G" udout.rx_strobe;
+      output "ss1_A_G" s1_A_G.seven_seg_A_G;
+      output "ss2_A_G" s2_A_G.seven_seg_A_G;
     ]
     
   

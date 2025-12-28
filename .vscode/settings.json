@@ -1,0 +1,5 @@
+{
+  "verilog.linting.linter": "verilator",
+  "verilog.linting.path": "~/.apio/packages/oss-cad-suite/bin",
+  "verilog.linting.verilator.arguments": "-DAPIO_SIM=0 --timing -Wno-TIMESCALEMOD -Icommon_modules",
+}
