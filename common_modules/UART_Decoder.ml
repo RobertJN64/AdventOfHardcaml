@@ -3,8 +3,8 @@ open Hardcaml
 module UART_Decoder = struct
   module I = struct
     type 'a t = {
-      clk : 'a;
-      rst : 'a    
+      clock : 'a;
+      reset : 'a    
     } [@@deriving sexp_of, hardcaml]
   end
 
@@ -16,8 +16,8 @@ module UART_Decoder = struct
 
   
 
-  let create ({clk; rst} : _ I.t) =
-    let spec = Reg_spec.create ~clock:clk ~clear:rst () in
+  let create ({clock; reset} : _ I.t) =
+    let spec = Reg_spec.create ~clock ~reset () in
     let counter_next = Signal.wire 25 in
     let counter = Signal.reg spec counter_next in
     let () = Signal.assign counter_next Signal.(counter +: (Signal.of_int ~width:25 1)) in
