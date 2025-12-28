@@ -28,7 +28,7 @@ module UART_Decoder = struct
 
   let create ({clock; reset; rx} : _ I.t) =
     let open Always in
-    let bit_timer_max = 217 in
+    let bit_timer_max = 217 in (* 25 MHz / 115200 baud *)
     let bit_timer_offset = 109 in (* half of max to sample in middle of byte*)
     let bit_timer_width = 8 in
     let bit_counter_max = 8 in
@@ -56,14 +56,14 @@ module UART_Decoder = struct
         ]);
       ( RCV_Bit, [
         if_ (bit_timer.value ==: of_int ~width:bit_timer_width bit_timer_max) (* if the bit timer triggers *)
-          [bit_timer <-- zero bit_timer_width; rx_byte <-- rx @: select rx_byte.value 7 1; (* zero out the bit timer, shift in one bit *)
+          [bit_timer <-- zero bit_timer_width; (* zero out the bit timer, shift in one bit *)
             if_ (bit_counter.value ==: of_int ~width:bit_counter_width bit_counter_max) (* if on the final bit *)
               [sm.set_next Done] (* goto Done *)
-              [bit_counter <-- bit_counter.value +: one bit_counter_width] (* else, advance the bit counter *)
+              [bit_counter <-- bit_counter.value +: one bit_counter_width; rx_byte <-- rx @: select rx_byte.value 7 1] (* else, advance the bit counter and shift in one bit *)
           ]
           [bit_timer <-- bit_timer.value +: one bit_timer_width] (* else, advance the bit timer *)
         ]);
-      ( Done, [sm.set_next Done]) (* TODO - leave the done state *)
+      ( Done, [sm.set_next Idle]) (* done state for one cycle to pulse the strobe *)
     ]];
 
     { O.rx_byte=rx_byte.value; O.rx_strobe=sm.is Done }

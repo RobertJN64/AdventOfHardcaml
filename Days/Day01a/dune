@@ -15,6 +15,6 @@
 (executable
  (name Day01a_tb)
  (modules Day01a_tb)
- (libraries hardcaml Day01a hardcaml_waveterm)
+ (libraries hardcaml hardcaml_waveterm AdventLib Day01a)
  (preprocess
   (pps ppx_hardcaml ppx_jane)))
