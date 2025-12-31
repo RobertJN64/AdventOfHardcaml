@@ -19,4 +19,20 @@ let send_serial_packet sim byte =
     delay_serial sim;
   ) bits;
   rx := Bits.of_int ~width:1 1;
-  delay_serial sim;
+  delay_serial sim
+
+let send_serial_string sim s =
+  String.iter (fun c ->
+    send_serial_packet sim (Char.code c)
+  ) s
+
+let send_serial_file sim filename =
+  let ic = open_in filename in
+  try
+    let file_size = in_channel_length ic in
+    let content = really_input_string ic file_size in
+    close_in ic;
+    send_serial_string sim content
+  with e ->
+    close_in_noerr ic;
+    raise e
