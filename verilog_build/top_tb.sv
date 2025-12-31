@@ -38,6 +38,24 @@ module top_tb ();
     #(SERIAL_BIT_PERIOD);
   endtask
 
+  task send_serial_file(input string filename);
+    int fd;
+    int c;
+    fd = $fopen(filename, "r");
+    if (fd == 0) begin
+      $display("ERROR: Could not open file %s", filename);
+      $finish;
+    end
+    while (!$feof(fd)) begin
+      c = $fgetc(fd);  // read one character as integer
+      if (c != -1) begin
+        send_serial_packet(c[7:0]);
+      end
+    end
+    $fclose(fd);
+  endtask
+
+
   task reset_DUT();
     SW1 = 1'b1;
     #(CLK_PERIOD * 2);
@@ -50,13 +68,11 @@ module top_tb ();
     RX = 1'b1;
     reset_DUT();
 
-    send_serial_packet(.data(8'd40));
-    #(CLK_PERIOD * 10);
-    send_serial_packet(.data(8'd40));
-    #(CLK_PERIOD * 10);
-    send_serial_packet(.data(8'd41));
+    send_serial_file("tb_input.txt");
 
     #(CLK_PERIOD * 1000);
+
+    $display("Answer %d\n", DUT.sol.answer);
 
     $finish;
   end
