@@ -1,0 +1,20 @@
+(library
+ (name Day12)
+ (modules Day12)
+ (libraries hardcaml AdventLib)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))
+
+(executable
+ (name Day12_v)
+ (modules Day12_v)
+ (libraries hardcaml Day12)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))
+
+(executable
+ (name Day12_tb)
+ (modules Day12_tb)
+ (libraries hardcaml hardcaml_waveterm AdventLib Day12)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))
