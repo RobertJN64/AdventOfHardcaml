@@ -13,8 +13,8 @@ let () =
   
   Cyclesim.reset sim;
   Cyclesim.cycle sim;
-  SerialTB.send_serial_packet sim 0x5A;
-  SerialTB.send_serial_packet sim 0xBC;
+  SerialTB.send_serial_packet sim 65;
+  SerialTB.send_serial_packet sim 66;
 
   for _ = 0 to 10000 do
     Cyclesim.cycle sim;
