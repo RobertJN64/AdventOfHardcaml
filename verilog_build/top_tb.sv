@@ -16,6 +16,7 @@ module top_tb ();
   logic RX;
   logic S1_A, S1_B, S1_C, S1_D, S1_E, S1_F, S1_G;
   logic S2_A, S2_B, S2_C, S2_D, S2_E, S2_F, S2_G;
+  logic LED1, LED2, LED3, LED4;
 
   top DUT (.*);
 

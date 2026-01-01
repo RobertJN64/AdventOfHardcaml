@@ -71,7 +71,7 @@ let day12 () =
         sm.set_next Count_RCV
     ]);
     (Process_Result, [
-      when_ (select ((counter_sum.value +: uresize active_counter.value grid_area_bit_width) *: of_int ~width:grid_area_bit_width 9) (grid_area_bit_width - 1) 0 <: grid_area)
+      when_ (select ((counter_sum.value +: uresize active_counter.value grid_area_bit_width) *: of_int ~width:grid_area_bit_width 8) (grid_area_bit_width - 1) 0 <: grid_area)
         [answer <-- answer.value +: one 10];
         sm.set_next Idle
     ])
@@ -88,6 +88,10 @@ let day12 () =
     [
       output "ss1_A_G" mdd.ss1_A_G.seven_seg_A_G;
       output "ss2_A_G" mdd.ss2_A_G.seven_seg_A_G;
+      output "LED1" (sm.is Idle);
+      output "LED2" (sm.is Width_RCV);
+      output "LED3" (sm.is Height_RCV);
+      output "LED4" (sm.is Count_RCV)
     ]
     
   
