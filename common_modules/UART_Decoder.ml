@@ -29,7 +29,7 @@ module UART_Decoder = struct
   let create ({clock; reset; rx} : _ I.t) =
     let open Always in
     let bit_timer_max = 217 in (* 25 MHz / 115200 baud *)
-    let bit_timer_offset = 109 in (* half of max to sample in middle of byte*)
+    let bit_timer_offset = bit_timer_max/2 in (* half of max to sample in middle of byte*)
     let bit_timer_width = num_bits_to_represent bit_timer_max in
     let bit_counter_max = 8 in
     let bit_counter_width = num_bits_to_represent bit_counter_max in
