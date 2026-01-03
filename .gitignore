@@ -1,2 +1,6 @@
 _build/
 .venv
+verilog_build/solution.venv
+verilog_build/tb_input.txt
+*.gtkw
+*.vcd

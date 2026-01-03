@@ -10,7 +10,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 01  |              |               |              |               |
 | 02  |              |               |              |               |
 | 03  | ✅          | ✅            | ✅          | ❌ [^1]       |
-| 04  |              |               |              |               |
+| 04  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
 | 05  |              |               |              |               |
 | 06  |              |               |              |               |
 | 07  |              |               |              |               |
@@ -20,6 +20,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 11  |              |               |              |               |
 | 12  |              |               | NA           | NA            |
 
+1: Not possible on ice40 due to register size / number of register needed
 [^1]: Not possible on ice40 due to answer register size.
 
 ## Setup
@@ -52,6 +53,8 @@ To simulate larger inputs, increasing the serial "baud rate" is useful. Change 2
 Note: inputs are typically required to use `\n` only as a line ending and to end with a `\n` at the end of the file.
 
 The testbenches also dump a waves.vcd file which can be inspected to debug the design.
+
+Note: per-AOC rules, complete puzzle inputs are not included in this repository. Instead, subset of inputs or the sample input in the puzzle description are used instead.
 
 ### Flashing to FPGA
 
@@ -140,7 +143,11 @@ let rec recursive_digit_fill idx =
   in
 ```
 
+### Days/Day04a and Day04b
 
+The solution actually simulates the entire grid by representing each cell with a register. Practically, this should be inferred as RAM.
+The cells are loaded one by one from UART, and then simulated by watching their neighbors. Day04a runs 1 cycle of the simulation, Day04b runs the simulation forever. Once the answer stops decreasing, it is valid. Due to simulation performance limitations a smaller grid is used, the grid
+size can be updated in the solution files.
 
 ## Other Files
 

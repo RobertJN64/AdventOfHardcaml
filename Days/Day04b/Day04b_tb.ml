@@ -3,7 +3,7 @@ open Hardcaml
 open Hardcaml_waveterm
 
 let () =
-  let circuit = Day04a.day04a () in
+  let circuit = Day04b.day04b () in
   let config = Cyclesim.Config.trace_all in
   let sim = Cyclesim.create ~config circuit in
   let waves, sim = Waveform.create sim in
@@ -18,7 +18,7 @@ let () =
   Cyclesim.cycle sim;
   SerialTB.send_serial_file sim "Days/Day04a/Day04a_input.txt";
 
-  for _ = 0 to 10 do
+  for _ = 0 to 1000 do (* run for a little longer to ensure we finish simulating *)
     Cyclesim.cycle sim;
   done;
 
@@ -42,7 +42,7 @@ let () =
 
   Printf.printf "Answer = %d\n" answer_value;
 
-  assert (answer_value = 13); (* update this if input changes *)
+  assert (answer_value = 43); (* update this if input changes *)
   
   close_out out_chan
 
