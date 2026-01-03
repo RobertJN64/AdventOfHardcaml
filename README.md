@@ -7,7 +7,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 
 | Day | Sim (Part 1) | FPGA (Part 1) | Sim (Part 2) | FPGA (Part 2) |
 | --- | ------------ | ------------- | ------------ | ------------- |
-| 01  | ✅          | ✅            |              |               |
+| 01  | ✅          | ✅            | ✅          | ✅            |
 | 02  |              |               |              |               |
 | 03  | ✅          | ✅            | ✅          | ❌ [^1]       |
 | 04  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
@@ -100,6 +100,37 @@ The resulting answer will then be scrolled across the seven segment displays.
 Each day folder contains the code for the corresponding day, with Day01a indicating Dec 1st, Part 1 and Day01b indicating Dec 1st, Part 2.
 
 Inside the folder is the solution circuit ([Day01a.ml](Days/Day01a/Day01a.ml)), the Hardcaml testbench ([Day01a_tb.ml](Days/Day01a/Day01a_tb.ml)), and a verilog generator file ([Day01a_v.ml](Days/Day01a/Day01a_v.ml)). A sample input for the testbench ([Day01a_input.txt](Days/Day01a/Day01a_input.txt)) is also included, along with the dune build system information.
+
+### Days/Day01a
+
+Uses an FSM to recieve the L/R character and the digits. Digits are "shifted in" by multiplying the previous value by 10 and adding the new digit.
+Once a newline is recieved, the dial position is updated by adding or subtracting the rotation amount.
+The result is normalized by adding or subtracting 100 until it falls in the range \[0, 100\).
+If the result is equal to 0, the answer is incremented.
+
+### Days/Day01b
+
+Similar to the previous day, except the counter is updated based on the following algorithim:
+
+```python
+if line.startswith('L'):
+    times = int(line[1:])
+    if dial_pos == 0:
+        count -= 1
+    dial_pos -= times
+    while dial_pos < 0:
+        count += 1
+        dial_pos += 100
+    if dial_pos == 0:
+        count += 1
+
+else:
+    times = int(line[1:])
+    dial_pos += times
+    while dial_pos >= 100:
+        count += 1
+        dial_pos -= 100
+```
 
 ### Days/Day03a
 
