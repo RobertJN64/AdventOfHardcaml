@@ -6,11 +6,10 @@ open Always
 module States = struct
     type t =
       | Idle
-      | Width_RCV
-      | Height_RCV
-      | Count_RCV
-      | Process_Counter
-      | Process_Result
+      | RCV_Char
+      | RCV_Digit
+      | Normalize
+      | Check_Zero
     [@@deriving sexp_of, compare ~localize, enumerate]
   end
 
@@ -20,60 +19,55 @@ let dayXX () =
   let rx = input "rx" 1 in
 
   let spec = Reg_spec.create ~clock ~reset () in
+  let dial_pos_width = 12 in
+  let spec_reset_to_50 = Reg_spec.override spec ~reset_to:(of_int ~width:dial_pos_width 50) in
+  let dial_pos = Variable.reg spec_reset_to_50 ~width:dial_pos_width in
 
   let udout = UART_Decoder.UART_Decoder.create {clock; reset; rx} in
   let rx_strobe = udout.rx_strobe in
   let rx_byte = udout.rx_byte in
 
   let sm = State_machine.create (module States) spec in
-  let grid_dim_bit_width = 8 in
-  let grid_area_bit_width = 2 * grid_dim_bit_width in
-  let grid_width = Variable.reg spec ~width:grid_dim_bit_width in
-  let grid_height = Variable.reg spec ~width:grid_dim_bit_width in
-  let active_counter = Variable.reg spec ~width:grid_dim_bit_width in
-  let answer = Variable.reg spec ~width:10 in
-  let counter_sum = Variable.reg spec ~width:grid_area_bit_width in
-  let grid_area = grid_width.value *: grid_height.value in
+  let rotation_amount = Variable.reg spec ~width:dial_pos_width in
+  let rotation_dir = Variable.reg spec ~width:1 in
+  let answer = Variable.reg spec ~width:12 in
 
-  (* only works if grid_dim_bit_width matches size of new_digit*)
-  let shift_in_digit prev_val new_digit = (select (prev_val *: of_int ~width:grid_dim_bit_width 10) (grid_dim_bit_width-1) 0) +: (new_digit -: of_char '0') in
-  
+  let shift_in_digit prev_val  = (select (prev_val *: of_int ~width:4 10) (dial_pos_width-1) 0) +: uresize (rx_byte -: of_char '0') dial_pos_width in
 
   compile [ sm.switch [
     ( Idle, [
-        sm.set_next Width_RCV;
-        grid_width <--. 0;
-        grid_height <--. 0;
-        active_counter <--. 0;
-        counter_sum <--. 0;
+        sm.set_next RCV_Char;
+        rotation_amount <--. 0;
     ]);
-    ( Width_RCV, [when_ rx_strobe [
-      if_ (rx_byte ==: of_char 'x')
-        [sm.set_next Height_RCV]
-        [grid_width <-- shift_in_digit grid_width.value rx_byte]
+    ( RCV_Char, [when_ rx_strobe [
+      sm.set_next RCV_Digit;
+      if_ (rx_byte ==: of_char 'R')
+        [rotation_dir <--. 0] (* 0 = R = + *)
+        [rotation_dir <--. 1] (* 1 = L = - *)
     ]]);
-    ( Height_RCV, [when_ rx_strobe [
-      if_ (rx_byte ==: of_char ':')
-        [sm.set_next Count_RCV]
-        [grid_height <-- shift_in_digit grid_height.value rx_byte]
-    ]]);
-    ( Count_RCV, [when_ rx_strobe [
-      if_ (rx_byte ==: of_char ' ')
-        [sm.set_next Process_Counter]
-        [if_ (rx_byte ==: of_char '\n')
-          [sm.set_next Process_Result]
-          [active_counter <-- shift_in_digit active_counter.value rx_byte]
-        ]
-    ]]);
-    (Process_Counter, [
-        counter_sum <-- counter_sum.value +: uresize active_counter.value grid_area_bit_width;
-        active_counter <--. 0;
-        sm.set_next Count_RCV
-    ]);
-    (Process_Result, [
-      when_ (select ((counter_sum.value +: uresize active_counter.value grid_area_bit_width) *: of_int ~width:grid_area_bit_width 8) (grid_area_bit_width - 1) 0 <: grid_area)
-        [answer <-- answer.value +:. 1];
-        sm.set_next Idle
+    ( RCV_Digit, [when_ rx_strobe [
+      if_ (rx_byte ==: of_char '\n') [
+        sm.set_next Normalize;
+        if_ rotation_dir.value [ (* left = - *)
+          dial_pos <-- dial_pos.value -: rotation_amount.value
+        ][ (* right = - *)
+          dial_pos <-- dial_pos.value +: rotation_amount.value
+      ]][
+      rotation_amount <-- shift_in_digit rotation_amount.value
+    ]]]);
+    ( Normalize, [
+      if_ (dial_pos.value >=+. 100) [ (* note: >=+. for signed instead of >=:. *)
+          dial_pos <-- dial_pos.value -:. 100
+        ][
+          if_ (dial_pos.value <+. 0) [ (* note: >=+. for signed instead of >=:. *)
+            dial_pos <-- dial_pos.value +:. 100
+          ][
+            sm.set_next Check_Zero
+    ]]]);
+    ( Check_Zero, [
+      sm.set_next Idle;
+      when_ (dial_pos.value ==:. 0)
+        [answer <-- answer.value +:. 1]
     ])
   ]];
 
@@ -88,10 +82,10 @@ let dayXX () =
     [
       output "ss1_A_G" mdd.ss1_A_G.seven_seg_A_G;
       output "ss2_A_G" mdd.ss2_A_G.seven_seg_A_G;
-      output "LED1" (sm.is Idle);
-      output "LED2" (sm.is Width_RCV);
-      output "LED3" (sm.is Height_RCV);
-      output "LED4" (sm.is Count_RCV)
+      output "LED1" (sm.is RCV_Char);
+      output "LED2" (sm.is RCV_Digit);
+      output "LED3" (sm.is Normalize);
+      output "LED4" (sm.is Check_Zero)
     ]
     
   
