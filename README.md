@@ -134,7 +134,7 @@ let rec recursive_digit_fill idx =
     if idx = 0 then if_ gnd [] []
     else
       if_ ((rx_digit >: select digits.value (4*idx-1) (4*idx-4)) &: 
-           (digit_counter.value <: (of_int ~width:digit_counter_width (number_of_inputs - idx + 1))))
+           (digit_counter.value <:. number_of_inputs - idx + 1))
         [digits <-- update_digit idx rx_digit]
         [recursive_digit_fill (idx - 1)]
   in

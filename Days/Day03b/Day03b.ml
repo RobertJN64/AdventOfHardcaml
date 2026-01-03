@@ -28,8 +28,7 @@ let day03b () =
 
   let digits = Variable.reg spec ~width:(4 * digits_needed) in
   let number_of_inputs = 100 in
-  let digit_counter_width = num_bits_to_represent number_of_inputs in
-  let digit_counter = Variable.reg spec ~width:digit_counter_width in
+  let digit_counter = Variable.reg spec ~width:(num_bits_to_represent number_of_inputs) in
   let answer_width = 48 in
   let answer = Variable.reg spec ~width:answer_width in
 
@@ -57,7 +56,7 @@ let day03b () =
     if idx = 0 then if_ gnd [] []
     else
       if_ ((rx_digit >: select digits.value (4*idx-1) (4*idx-4)) &: 
-           (digit_counter.value <: (of_int ~width:digit_counter_width (number_of_inputs - idx + 1))))
+           (digit_counter.value <:. number_of_inputs - idx + 1))
         [digits <-- update_digit idx rx_digit]
         [recursive_digit_fill (idx - 1)]
   in
@@ -77,14 +76,14 @@ let day03b () =
   compile [ sm.switch [
     ( Idle, [
         sm.set_next Process_Digits;
-        digits <-- zero (4 * digits_needed);
-        digit_counter <-- zero digit_counter_width;
+        digits <--. 0;
+        digit_counter <--. 0;
     ]);
     ( Process_Digits, [
-      when_ (digit_counter.value ==: of_int ~width:digit_counter_width number_of_inputs) (* force to second digit *)
+      when_ (digit_counter.value ==:. number_of_inputs) (* force to second digit *)
         [sm.set_next Done];
       when_ rx_strobe [ (* we have not seen a 9 yet*)
-        digit_counter <-- digit_counter.value +: one digit_counter_width;
+        digit_counter <-- digit_counter.value +:. 1;
         recursive_digit_fill digits_needed
     ]]);
     (Done, [

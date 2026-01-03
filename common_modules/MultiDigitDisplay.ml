@@ -20,23 +20,22 @@ module MultiDigitDisplay = struct
   let create ({clock; reset; digits} : _ I.t) =
     let open Always in
     let num_of_digits = width digits / 4 in
-    let digit_counter_width = num_bits_to_represent num_of_digits in
     let timer_width = 25 in 
 
     let spec = Reg_spec.create ~clock ~reset () in
     let timer_next = wire timer_width in
     let timer = reg spec timer_next in
-    let () = assign timer_next (timer +: (of_int ~width:timer_width 1)) in
+    let () = assign timer_next (timer +:. 1) in
 
-    let digit_counter = Variable.reg spec ~width:digit_counter_width in (* number of bits rcv in current packet *)
+    let digit_counter = Variable.reg spec ~width:(num_bits_to_represent num_of_digits) in (* number of bits rcv in current packet *)
     let _ = digit_counter.value -- "mdd_state" in
     let _ = timer -- "mdd_timer" in
 
     compile [
-      when_ (timer ==: zero timer_width)
-        [if_ (digit_counter.value ==: of_int ~width:digit_counter_width (num_of_digits-1))
-          [digit_counter <-- zero digit_counter_width]
-          [digit_counter <-- digit_counter.value +: one digit_counter_width]
+      when_ (timer ==:. 0)
+        [if_ (digit_counter.value ==:. num_of_digits-1)
+          [digit_counter <--. 0]
+          [digit_counter <-- digit_counter.value +:. 1]
         ]
     ];
 

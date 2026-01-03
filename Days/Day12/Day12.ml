@@ -42,10 +42,10 @@ let day12 () =
   compile [ sm.switch [
     ( Idle, [
         sm.set_next Width_RCV;
-        grid_width <-- zero grid_dim_bit_width;
-        grid_height <-- zero grid_dim_bit_width;
-        active_counter <-- zero grid_dim_bit_width;
-        counter_sum <-- zero grid_area_bit_width
+        grid_width <--. 0;
+        grid_height <--. 0;
+        active_counter <--. 0;
+        counter_sum <--. 0
     ]);
     ( Width_RCV, [when_ rx_strobe [
       if_ (rx_byte ==: of_char 'x')
@@ -67,12 +67,12 @@ let day12 () =
     ]]);
     (Process_Counter, [
         counter_sum <-- counter_sum.value +: uresize active_counter.value grid_area_bit_width;
-        active_counter <-- zero grid_dim_bit_width;
+        active_counter <--. 0;
         sm.set_next Count_RCV
     ]);
     (Process_Result, [
       when_ (select ((counter_sum.value +: uresize active_counter.value grid_area_bit_width) *: of_int ~width:grid_area_bit_width 8) (grid_area_bit_width - 1) 0 <: grid_area)
-        [answer <-- answer.value +: one 10];
+        [answer <-- answer.value +:. 1];
         sm.set_next Idle
     ])
   ]];

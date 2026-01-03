@@ -29,8 +29,7 @@ let day03a () =
   let first_digit = Variable.reg spec ~width:4 in
   let second_digit = Variable.reg spec ~width:4 in
   let number_of_inputs = 100 in
-  let digit_counter_width = num_bits_to_represent number_of_inputs in
-  let digit_counter = Variable.reg spec ~width:digit_counter_width in
+  let digit_counter = Variable.reg spec ~width:(num_bits_to_represent number_of_inputs) in
   let current_voltage = (first_digit.value *: of_int ~width:4 10) +: uresize second_digit.value 8 in
   let answer_width = 16 in
   let answer = Variable.reg spec ~width:answer_width in
@@ -42,27 +41,27 @@ let day03a () =
   compile [ sm.switch [
     ( Idle, [
         sm.set_next First_Digit;
-        first_digit <-- zero 4;
-        second_digit <-- zero 4;
-        digit_counter <-- zero digit_counter_width;
+        first_digit <--. 0;
+        second_digit <--. 0;
+        digit_counter <--. 0;
     ]);
     ( First_Digit, [
-      when_ (digit_counter.value ==: of_int ~width:digit_counter_width number_of_inputs -: one digit_counter_width) (* force to second digit *)
+      when_ (digit_counter.value ==:. number_of_inputs - 1) (* force to second digit *)
         [sm.set_next Second_Digit];
       when_ rx_strobe [ (* we have not seen a 9 yet*)
-        digit_counter <-- digit_counter.value +: one digit_counter_width;
-        if_ (rx_digit ==: of_int ~width:4 9)
-          [first_digit <-- rx_digit; second_digit <-- zero 4; sm.set_next Second_Digit]
+        digit_counter <-- digit_counter.value +:. 1;
+        if_ (rx_digit ==:. 9)
+          [first_digit <-- rx_digit; second_digit <--. 0; sm.set_next Second_Digit]
           [if_ (rx_digit >: first_digit.value) (* this is better than anything we have seen *)
-            [first_digit <-- rx_digit; second_digit <-- zero 4] (* now we need a new second digit *)
+            [first_digit <-- rx_digit; second_digit <--. 0] (* now we need a new second digit *)
             [when_ (rx_digit >: second_digit.value) (* not a better first digit, but is a better second digit *)
               [second_digit <-- rx_digit]
     ]]]]);
     (Second_Digit, [
-      when_ (digit_counter.value ==: of_int ~width:digit_counter_width number_of_inputs) (* force to done *)
+      when_ (digit_counter.value ==:. number_of_inputs) (* force to done *)
         [sm.set_next Done];
       when_ rx_strobe [
-        digit_counter <-- digit_counter.value +: one digit_counter_width;
+        digit_counter <-- digit_counter.value +:. 1;
         when_ (rx_digit >: second_digit.value) (* this is better than anything we have seen *)
           [second_digit <-- rx_digit]
     ]]);

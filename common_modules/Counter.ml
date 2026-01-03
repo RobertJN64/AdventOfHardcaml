@@ -20,6 +20,6 @@ module Counter = struct
     let spec = Reg_spec.create ~clock ~reset () in
     let counter_next = Signal.wire 25 in
     let counter = Signal.reg spec counter_next in
-    let () = Signal.assign counter_next Signal.(counter +: (Signal.of_int ~width:25 1)) in
+    let () = Signal.assign counter_next Signal.(counter +:. 1) in
     { O.counter }
 end
