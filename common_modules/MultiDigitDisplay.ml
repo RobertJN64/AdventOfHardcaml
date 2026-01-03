@@ -17,8 +17,9 @@ module MultiDigitDisplay = struct
     } [@@deriving sexp_of, hardcaml]
   end
   
-  let create ({clock; reset; digits} : _ I.t) num_of_digits =
+  let create ({clock; reset; digits} : _ I.t) =
     let open Always in
+    let num_of_digits = width digits / 4 in
     let digit_counter_width = num_bits_to_represent num_of_digits in
     let timer_width = 25 in 
 

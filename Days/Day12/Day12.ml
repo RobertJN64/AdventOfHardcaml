@@ -81,7 +81,7 @@ let day12 () =
 
   let bin_to_bcd = Binary_to_BCD.Binary_to_BCD.create {binary_val=answer_val} in
   let bin_to_bcd_val = bin_to_bcd.bcd_val -- "bcd_out" in
-  let mdd = MultiDigitDisplay.MultiDigitDisplay.create {clock; reset; digits=bin_to_bcd_val} 4 in
+  let mdd = MultiDigitDisplay.MultiDigitDisplay.create {clock; reset; digits=bin_to_bcd_val} in
   
   Circuit.create_exn
     ~name:"solution"
