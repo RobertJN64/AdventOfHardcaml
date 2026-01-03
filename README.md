@@ -1,9 +1,26 @@
 # Advent of Hardcaml
 
-Hardcaml solutions for Advent of Code 2025, targeted for an iCE40 FPGA.
+Hardcaml solutions for Advent of Code 2025, targeted for an iCE40 FPGA (the  [nandland-go-board](https://nandland.com/the-go-board/)).
+Each solution receives the input text over UART and scrolls the answer across seven segment displays.
 
-Solutions:
- - DayXX Part 1 and Part 2
+## Solution Progress:
+
+| Day | Sim (Part 1) | FPGA (Part 1) | Sim (Part 2) | FPGA (Part 2) |
+| --- | ------------ | ------------- | ------------ | ------------- |
+| 01  |              |               |              |               |
+| 02  |              |               |              |               |
+| 03  | ✅          | ✅            | ✅          | ❌ [^1]       |
+| 04  |              |               |              |               |
+| 05  |              |               |              |               |
+| 06  |              |               |              |               |
+| 07  |              |               |              |               |
+| 08  |              |               |              |               |
+| 09  |              |               |              |               |
+| 10  |              |               |              |               |
+| 11  |              |               |              |               |
+| 12  |              |               | NA           | NA            |
+
+[^1]: Not possible on ice40 due to answer register size.
 
 ## Setup
 
@@ -20,23 +37,21 @@ For development:
 opam install ocaml-lsp-server ocamlformat
 ```
 
-## Files
-
-### Common Modules
-Standardized modules that are not day-specific.
-
-### Days/Day01a
-Each day folder contains the code for the corresponding day, with Day01a indicating Dec 1st, Part 1 and Day01b indicating Dec 1st, Part 2.
-
-Inside the folder is the solution circuit ([Day01a.ml](Days/Day01a/Day01a.ml)), the Hardcaml testbench ([Day01a_tb.ml](Days/Day01a/Day01a_tb.ml)), and a verilog generator file ([Day01a_v.ml](Days/Day01a/Day01a_v.ml)).
-
 ## Usage
 
 ### Simulation
 
 Requires: ocaml, dune, and hardcaml
 
-Run `dune build` and `dune exec ./Days/Day01a/Day01a_tb.exe` replacing the day number as needed. This will run the Cyclesim testbench.
+Run `dune build` and `dune exec ./Days/Day01a/Day01a_tb.exe` replacing the day number as needed. This will run the Cyclesim testbench. `01a` refers to Day1 part 1, use `01b` to refer to Day1 part 2.
+
+The testbench simulates the actual UART input character by character and checks the answer by reading the internal "answer" register. A sample input is provided and the answer is checked against the correct answer with an assert at the end of the testbench.
+
+To simulate larger inputs, increasing the serial "baud rate" is useful. Change 217 in [SerialTB.ml](common_modules/SerialTB.ml) and [UART_Decoder.ml](common_modules/UART_Decoder.ml) to 10. Sometimes, properties of the input (such as the expected number of characters in a line) are hardcoded into the design. This is noted in the design details below.
+
+Note: inputs are typically required to use `\n` only as a line ending and to end with a `\n` at the end of the file.
+
+The testbenches also dump a waves.vcd file which can be inspected to debug the design.
 
 ### Flashing to FPGA
 
@@ -51,7 +66,119 @@ Run `dune build` and `dune exec ./Days/Day01a/Day01a_v.exe` replacing the day nu
 Flashing:
 ```cmd
 cd verilog_build
-apio drivers install ftdi
+apio drivers install ftdi // once
 apio upload
 ```
+
+#### Testing:
+
+The FPGA must be reset by pushing the SW1 button.
+The input can then be sent over UART at 115200 baud using pyserial or similar.
+
+```python
+import serial
+
+with open('tb_input.txt') as f:
+    data = f.read()
+
+com = serial.Serial('COM6', baudrate='115200')
+com.write(data.encode('utf-8'))
+com.close()
+```
+
+Note: inputs are typically required to use `\n` only as a line ending and to end with a `\n` at the end of the file.
+
+
+The resulting answer will then be scrolled across the seven segment displays.
+
+
+## Solution Details
+
+Each day folder contains the code for the corresponding day, with Day01a indicating Dec 1st, Part 1 and Day01b indicating Dec 1st, Part 2.
+
+Inside the folder is the solution circuit ([Day01a.ml](Days/Day01a/Day01a.ml)), the Hardcaml testbench ([Day01a_tb.ml](Days/Day01a/Day01a_tb.ml)), and a verilog generator file ([Day01a_v.ml](Days/Day01a/Day01a_v.ml)). A sample input for the testbench ([Day01a_input.txt](Days/Day01a/Day01a_input.txt)) is also included, along with the dune build system information.
+
+### Days/Day03a
+
+The FSM recieves input digit by digit, attempting to fill the first digit with a 9 (or the highest available digit), and moving on to the second digit once 1 digit away from the end or once the first digit has a 9.
+
+### Days/Day03b
+
+A generalized form of the algorithim from the previous day, the digits are filled from left to right, locking digits once too few remain for them to be updated. Digits are replaced when a higher digit is found, which zeroes out all digits to the right.
+
+Example:
+```
+Pick 3 from input: 566487
+Digits: 000
+5: (5>0) -> replace first digit
+Digits: 500
+6: (6>5) -> replace first digit
+Digits: 600
+6: (6=6), (6>0) -> replace second digit
+Digits: 660
+4: (4<6), (4<6), (4>0) -> replace third digit
+Digits: 664
+First digit is locked
+8: (8>6) -> replace second digit, zero all digits to the right
+Digits: 680
+Second digit is locked
+7: (7>0) -> replace third digit
+Digits: 687
+All digits are now locked 
+```
+
+This had an elegant recursive hardcaml implementation and really demonstrated the usefulness of a function HDL.
+
+```ocaml
+let rec recursive_digit_fill idx = 
+    if idx = 0 then if_ gnd [] []
+    else
+      if_ ((rx_digit >: select digits.value (4*idx-1) (4*idx-4)) &: 
+           (digit_counter.value <: (of_int ~width:digit_counter_width (number_of_inputs - idx + 1))))
+        [digits <-- update_digit idx rx_digit]
+        [recursive_digit_fill (idx - 1)]
+  in
+```
+
+
+
+## Other Files
+
+### Common Modules
+Standardized modules that are not day-specific.
+
+#### Binary_to_BCD.ml
+Double-dabble implementation of binary to BCD converter.
+
+#### MultiDigitDisplay.ml
+Scrolls BCD digits across 2 seven segment displays.
+ie: to display `123` the displays will show blank, `12`, `23`
+
+#### SS_Display.ml
+Drives an individual seven segment display from a BCD input to show `0-10`. `11-14` are blank, and `15` shows a `-` sign.
+
+#### UART_Decoder.ml
+Decodes an incoming UART data. When an RX falling edge is detected, the design waits for half a bit period, then samples every bit period. No integrity checking (parity / stop bits) are done as error handling wouldn't allow the top level design to do anything other then enter an error state which isn't that helpful for AoC.
+
+The go-board runs at 25 MHz, so a counter value of 217 is used for 115200 baud.
+
+#### SerialTB.ml
+Cyclesim testbench functions to drive a UART input. Pairs with the UART_Decoder module.
+
+## verilog_build
+
+`apio.ini` - apio project file
+
+`go-board.pcf` - go-board pin constraint file
+
+`solution.v` - generated by `DayXX_v.ml`
+
+`sync.sv` - synchronizer for the RX input
+
+`top_tb.sv` - testbench for the system verilog code, effectively identical to the `DayXX_tb.ml` tests where character are sent by reading `tb_input.txt`
+
+`top.sv` - top level SystemVerilog code for the FPGA implementation, synchronizes the RX input and unpacks the seven seg outputs
+
+
+
 

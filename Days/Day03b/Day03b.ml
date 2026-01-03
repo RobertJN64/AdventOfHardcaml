@@ -65,7 +65,6 @@ let day03b () =
 
   (* call with idx from 1 to 12 *)
   let rec recursive_value_calc idx =
-    
     let value = select digits.value (4*idx-1) (4*idx-4) in
     if idx = digits_needed then value
     else recursive_value_calc(idx + 1) *: of_int ~width:4 10 +: uresize value ((digits_needed-idx)*4+4)
