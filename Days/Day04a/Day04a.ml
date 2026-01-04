@@ -28,7 +28,7 @@ let day04a () =
 
   let grid_dim = 10 in (* update to match input *)
   let grid_dim_width = num_bits_to_represent (grid_dim + 2) in
-  (* grid has "padding" of 1 row around the simulated  section *)
+  (* grid has "padding" of 1 row around the simulated section *)
   let reg_grid = Array.init (grid_dim+2) (fun _ ->
     Array.init (grid_dim+2) (fun _ -> 
       Variable.reg spec ~width:1

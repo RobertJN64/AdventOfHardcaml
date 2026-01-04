@@ -17,11 +17,12 @@ let () =
   Cyclesim.reset sim;
   Cyclesim.cycle sim;
   SerialTB.send_serial_file sim "Days/DayXX/DayXX_input.txt";
-  let answer_value = Cyclesim.Reg.to_int answer in
   
-  for _ = 0 to 10000 do
+  for _ = 0 to 100 do
     Cyclesim.cycle sim;
   done;
+
+  let answer_value = Cyclesim.Reg.to_int answer in
 
   (* Display waveform in terminal *)
   Waveform.print ~wave_width:1 ~display_width:150 ~display_height:50 waves;
