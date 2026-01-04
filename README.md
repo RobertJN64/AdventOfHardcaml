@@ -17,11 +17,11 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 08  |              |               |              |               |
 | 09  |              |               |              |               |
 | 10  |              |               |              |               |
-| 11  |              |               |              |               |
+| 11  | ✅          | ❌ [^1]       |              |               |
 | 12  |              |               | NA           | NA            |
 
-1: Not possible on ice40 due to register size / number of register needed
-[^1]: Not possible on ice40 due to answer register size.
+1: Not possible on ice40 due to register size / number of registers needed
+[^1]: Not possible on ice40 due to register size / number of registers needed
 
 Note: due to simulation performance limitations, Days 4 and 7 were only tested against a smaller grid.
 All other days were tested against the full input, although only subset/sample is included in this repository per AoC rules.
