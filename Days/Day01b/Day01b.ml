@@ -32,7 +32,7 @@ let day01b () =
   let rotation_dir = Variable.reg spec ~width:1 in
   let answer = Variable.reg spec ~width:16 in
 
-  let shift_in_digit prev_val  = (select (prev_val *: of_int ~width:4 10) (dial_pos_width-1) 0) +: uresize (rx_byte -: of_char '0') dial_pos_width in
+  let shift_in_digit prev_val = (select (prev_val *: of_int ~width:4 10) (dial_pos_width-1) 0) +: uresize (rx_byte -: of_char '0') dial_pos_width in
 
   compile [ sm.switch [
     ( Idle, [

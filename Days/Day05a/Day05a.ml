@@ -35,7 +35,7 @@ let day05a () =
   let id_to_check = Variable.reg spec ~width:id_bit_width in
   let answer = Variable.reg spec ~width:12 in
 
-  let shift_in_digit prev_val  = (select (prev_val *: of_int ~width:4 10) (id_bit_width-1) 0) +: uresize (rx_byte -: of_char '0') id_bit_width in
+  let shift_in_digit prev_val = (select (prev_val *: of_int ~width:4 10) (id_bit_width-1) 0) +: uresize (rx_byte -: of_char '0') id_bit_width in
 
   let insert_id_lower = List.init (max_num_ranges) (fun r ->
     let selected  = active_range.value ==:. r in
