@@ -3,7 +3,7 @@ open Hardcaml
 open Hardcaml_waveterm
 
 let () =
-  let circuit = Day04b.day04b () in
+  let circuit = Day07a.day07a () in
   let config = Cyclesim.Config.trace_all in
   let sim = Cyclesim.create ~config circuit in
   let waves, sim = Waveform.create sim in
@@ -16,25 +16,29 @@ let () =
 
   Cyclesim.reset sim;
   Cyclesim.cycle sim;
-  SerialTB.send_serial_file sim "Days/Day04a/Day04a_input.txt";
-
-  for _ = 0 to 1000 do (* run for a little longer to ensure we finish simulating *)
+  SerialTB.send_serial_file sim "Days/Day07a/Day07a_input.txt";
+  
+  for _ = 0 to 100 do
     Cyclesim.cycle sim;
   done;
 
   let answer_value = Cyclesim.Reg.to_int answer in
-  
+
   (* Display waveform in terminal *)
   Waveform.print ~wave_width:1 ~display_width:150 ~display_height:50 waves;
 
-  for r = 1 to 10 do
-    for c = 1 to 10 do
+  for r = 0 to 15 do
+    for c = 1 to 15 do
       let name = Printf.sprintf "grid_%d_%d" r c in
+      let error = Printf.sprintf "grid_%d_%d reg not found" r c in
       let grid_cell = match Cyclesim.lookup_reg_by_name sim name with
       | Some node -> node
-      | None -> failwith "grid reg not found" in
+      | None -> failwith error in
       let grid_cell_value = Cyclesim.Reg.to_int grid_cell in
-      if grid_cell_value == 1 then Printf.printf "@" else Printf.printf "."
+      if grid_cell_value == 0 then Printf.printf " "
+      else if grid_cell_value == 1 then Printf.printf "|"
+      else if grid_cell_value == 2 then Printf.printf "^"
+      else if grid_cell_value == 3 then Printf.printf "S"
     done;
     Printf.printf "\n"
   done;
@@ -42,7 +46,7 @@ let () =
 
   Printf.printf "Answer = %d\n" answer_value;
 
-  assert (answer_value = 43); (* update this if input changes *)
-  
+  assert (answer_value = 21); (* update this if input changes *)
+
   close_out out_chan
 
