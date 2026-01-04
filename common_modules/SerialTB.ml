@@ -23,7 +23,8 @@ let send_serial_packet sim byte =
 
 let send_serial_string sim s =
   String.iter (fun c ->
-    send_serial_packet sim (Char.code c)
+    send_serial_packet sim (Char.code c);
+    Printf.printf "%c%!" c;
   ) s
 
 let send_serial_file sim filename =
