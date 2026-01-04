@@ -13,7 +13,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 04  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
 | 05  |              |               |              |               |
 | 06  |              |               |              |               |
-| 07  | ✅          | ❌ [^1]       |              |               |
+| 07  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
 | 08  |              |               |              |               |
 | 09  |              |               |              |               |
 | 10  |              |               |              |               |
@@ -185,6 +185,10 @@ size can be updated in the solution files.
 Much like Day04, the grid is loaded one by one from UART, and then each cell is simulated to update based on its neighbors.
 The number of splitters with a beam enterting is counted. Due to simulation performance limitations a smaller grid is used,
 the grid size can be updated in the solution files.
+
+### Days/Day07b
+
+Similar to 07a, except the number of "timelines" from each beam is tracked on the way down, and the timelines on the bottom row are summed.
 
 ## Other Files
 
