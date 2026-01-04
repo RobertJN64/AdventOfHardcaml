@@ -13,7 +13,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 04  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
 | 05  |              |               |              |               |
 | 06  |              |               |              |               |
-| 07  |              |               |              |               |
+| 07  | ✅          | ❌ [^1]       |              |               |
 | 08  |              |               |              |               |
 | 09  |              |               |              |               |
 | 10  |              |               |              |               |
@@ -179,6 +179,12 @@ let rec recursive_digit_fill idx =
 The solution actually simulates the entire grid by representing each cell with a register. Practically, this should be inferred as RAM.
 The cells are loaded one by one from UART, and then simulated by watching their neighbors. Day04a runs 1 cycle of the simulation, Day04b runs the simulation forever. Once the answer stops decreasing, it is valid. Due to simulation performance limitations a smaller grid is used, the grid
 size can be updated in the solution files.
+
+### Days/Day07a
+
+Much like Day04, the grid is loaded one by one from UART, and then each cell is simulated to update based on its neighbors.
+The number of splitters with a beam enterting is counted. Due to simulation performance limitations a smaller grid is used,
+the grid size can be updated in the solution files.
 
 ## Other Files
 

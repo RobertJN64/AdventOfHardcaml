@@ -44,7 +44,7 @@ let day07a () =
   let answer_width = 8 in
   let answer = Variable.reg spec ~width:answer_width in
 
-  let grid_sum_vertical =
+  let count_splits =
     let acc = ref (zero answer_width) in (* mutable ref accumulator *)
 
     (* iterate over vertical neighbors *)
@@ -103,7 +103,24 @@ let day07a () =
             )
           )
     ))]]);
-    ( Grid_Sim, [answer <-- grid_sum_vertical]);
+    ( Grid_Sim, (List.concat (
+      List.init (grid_height - 1) (fun raw_r ->
+        List.init (grid_width) (fun raw_c ->
+          let r = raw_r + 1 in
+          let c = raw_c + 1 in
+
+          when_ (reg_grid.(r).(c).value ==:. grid_char_dot) [
+            when_ (reg_grid.(r-1).(c).value ==:. grid_char_S) [reg_grid.(r).(c) <--. grid_char_bar]; (* start from S *)
+            when_ (reg_grid.(r-1).(c).value ==:. grid_char_bar) [reg_grid.(r).(c) <--. grid_char_bar]; (* | moves down *)
+            when_ ((reg_grid.(r).(c-1).value ==:. grid_char_carat) &:
+                   (reg_grid.(r-1).(c-1).value ==:. grid_char_bar)
+            ) [reg_grid.(r).(c) <--. grid_char_bar]; (* activated ^ splits *)
+            when_ ((reg_grid.(r).(c+1).value ==:. grid_char_carat) &:
+                   (reg_grid.(r-1).(c+1).value ==:. grid_char_bar)
+            ) [reg_grid.(r).(c) <--. grid_char_bar] (* activated ^ splits *)
+          ]
+      )))) @ [answer <-- count_splits]
+    );
     ( Error, []) (* lock here forever - all LEDs are on - this happens if the number_of_inputs var does not match the actual inputs *)
   ]];
 
