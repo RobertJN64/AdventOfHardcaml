@@ -18,7 +18,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 09  | ✅          | ❌            |              |               |
 | 10  |              |               |              |               |
 | 11  | ✅          | ❌            | ✅          | ❌            |
-| 12  |              |               | NA           | NA            |
+| 12  | ✅          | ✅            | NA           | NA            |
 
 Many days require more memory / registers than are available on the ice40, and therefore could only run on the full AoC input in simulation
 

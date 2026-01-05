@@ -28,6 +28,8 @@ let () =
   Waveform.print ~wave_width:1 ~display_width:150 ~display_height:50 waves;
 
   Printf.printf "Answer = %d\n" answer_value;
-  
-  close_out out_chan
+
+  close_out out_chan;
+
+  assert (answer_value = 5); (* update this if input changes *)
 
