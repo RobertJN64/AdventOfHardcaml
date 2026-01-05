@@ -17,7 +17,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 08  |              |               |              |               |
 | 09  |              |               |              |               |
 | 10  |              |               |              |               |
-| 11  | ✅          | ❌ [^1]       |              |               |
+| 11  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
 | 12  |              |               | NA           | NA            |
 
 1: Not possible on ice40 due to register size / number of registers needed

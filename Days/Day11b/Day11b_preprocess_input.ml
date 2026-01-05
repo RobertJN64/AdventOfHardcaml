@@ -1,7 +1,7 @@
 module SMap = Map.Make(String)
 module ISet = Set.Make(Int)
 
-let preassigned = [ ("null", 0); ("out", 1); ("svr", 2); ("dac", 3); ("fft", 4) ]
+let preassigned = [ ("null", 0); ("out", 1); ("dac", 2); ("fft", 3); ("svr", 4) ]
 
 let parse_line line =
   match String.split_on_char ':' line with
