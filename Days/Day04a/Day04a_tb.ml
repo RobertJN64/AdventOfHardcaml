@@ -42,7 +42,7 @@ let () =
 
   Printf.printf "Answer = %d\n" answer_value;
 
+  close_out out_chan;
+
   assert (answer_value = 13); (* update this if input changes *)
-  
-  close_out out_chan
 
