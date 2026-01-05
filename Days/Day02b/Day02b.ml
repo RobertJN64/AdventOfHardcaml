@@ -11,7 +11,7 @@ module States = struct
     [@@deriving sexp_of, compare ~localize, enumerate]
   end
 
-let day02a () =
+let day02b () =
   let clock = input "clock" 1 in
   let reset = input "reset" 1 in
   let rx = input "rx" 1 in
@@ -34,20 +34,53 @@ let day02a () =
   let id_bcd = (Binary_to_BCD.Binary_to_BCD.create {binary_val=current_id.value}).bcd_val in
 
   (* checks if bin_to_bcd contains repeated pattern, ie: 00446446 *)
-  let repeated_length len = 
-    let first = select id_bcd (len*4-1) 0 in
-    let second = select id_bcd (8*len-1) (len*4) in
-    if (len*8 == width id_bcd) then (first ==: second) &: (select id_bcd (8*len-1) (8*len-4) <>:. 0)
-    else
-      let rest = select id_bcd ((width id_bcd)-1) (8*len) in
-      (first ==: second) &: (rest ==:. 0) &: (select id_bcd (8*len-1) (8*len-4) <>:. 0) (* the matching section can't start wiht a 0 *)
+  let repeated_length len number_of_groups =
+    let group i = 
+      let hi = (len*4*(i+1) - 1) in
+      let lo = (len*4*i) in
+      select id_bcd hi lo in
+
+    let group_0 = group 0 in
+
+    (* all groups equal to group 0 *)
+    let groups_equal =
+      List.init (number_of_groups - 1) (fun i ->
+        group_0 ==: group (i + 1)
+      )
+      |> List.fold_left ( &: ) vdd
+    in
+
+    (* rest of the signal above repeated region must be zero *)
+    let rest_zero =
+      if len*4*number_of_groups = width id_bcd then
+        vdd
+      else
+        let rest = select id_bcd ((width id_bcd) - 1) (len*4*number_of_groups) in
+        rest ==:. 0
+    in
+
+    (* repeated region must not start with 0 *)
+    let leading_nonzero =
+      select id_bcd (len*4 - 1) (len*4 - 4) <>:. 0
+    in
+
+    groups_equal &: rest_zero &: leading_nonzero
   in
    
-  (* check all length patterns from 1 to id_width/2*)
+  (* check all length patterns *)
+  let max_ng = (width id_bcd)/4 in
   let repeated =
-    List.init ((width id_bcd)/8) (fun i -> i + 1)
+    List.init (max_ng-1) (fun i -> i + 2) (* current_ng = 2 .. max_ng *)
     |> List.fold_left
-        (fun acc len -> acc |: repeated_length len)
+        (fun acc current_ng ->
+          let max_len = (width id_bcd) / (4 * current_ng) in
+          List.init max_len (fun i -> i + 1) (* len = 1 .. max_len *)
+          |> List.fold_left
+              (fun acc len ->
+                acc |: repeated_length len current_ng
+              )
+              acc
+        )
         gnd
   in
 

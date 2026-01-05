@@ -8,20 +8,19 @@ Each solution receives the input text over UART and scrolls the answer across se
 | Day | Sim (Part 1) | FPGA (Part 1) | Sim (Part 2) | FPGA (Part 2) |
 | --- | ------------ | ------------- | ------------ | ------------- |
 | 01  | ✅          | ✅            | ✅          | ✅            |
-| 02  | ✅          | ❌ [^1]       |              |               |
-| 03  | ✅          | ✅            | ✅          | ❌ [^1]       |
-| 04  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
-| 05  | ✅          | ❌ [^1]       |              |               |
+| 02  | ✅          | ❌            | ✅          | ❌            |
+| 03  | ✅          | ✅            | ✅          | ❌            |
+| 04  | ✅          | ❌            | ✅          | ❌            |
+| 05  | ✅          | ❌            |              |               |
 | 06  |              |               |              |               |
-| 07  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
+| 07  | ✅          | ❌            | ✅          | ❌            |
 | 08  |              |               |              |               |
-| 09  | ✅          | ❌ [^1]       |              |               |
+| 09  | ✅          | ❌            |              |               |
 | 10  |              |               |              |               |
-| 11  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
+| 11  | ✅          | ❌            | ✅          | ❌            |
 | 12  |              |               | NA           | NA            |
 
-1: Not possible on ice40 due to register size / number of registers needed
-[^1]: Not possible on ice40 due to register size / number of registers needed
+Many days require more memory / registers than are available on the ice40, and therefore could only run on the full AoC input in simulation
 
 Note: due to simulation performance limitations, Days 4 and 7 were only tested against a smaller grid.
 All other days were tested against the full input, although only subset/sample is included in this repository per AoC rules.
