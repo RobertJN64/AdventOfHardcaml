@@ -8,7 +8,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | Day | Sim (Part 1) | FPGA (Part 1) | Sim (Part 2) | FPGA (Part 2) |
 | --- | ------------ | ------------- | ------------ | ------------- |
 | 01  | ✅          | ✅            | ✅          | ✅            |
-| 02  |              |               |              |               |
+| 02  | ✅          | ❌ [^1]       |              |               |
 | 03  | ✅          | ✅            | ✅          | ❌ [^1]       |
 | 04  | ✅          | ❌ [^1]       | ✅          | ❌ [^1]       |
 | 05  | ✅          | ❌ [^1]       |              |               |
