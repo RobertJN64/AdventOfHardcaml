@@ -38,13 +38,13 @@ let day05a () =
   let shift_in_digit prev_val = (select (prev_val *: of_int ~width:4 10) (id_bit_width-1) 0) +: uresize (rx_byte -: of_char '0') id_bit_width in
 
   let insert_id_lower = List.init (max_num_ranges) (fun r ->
-    let selected  = active_range.value ==:. r in
+    let selected = active_range.value ==:. r in
     let lo, _ = range_array.(r) in
     when_ selected [lo <-- id_to_check.value]
   ) in
 
   let insert_id_upper = List.init (max_num_ranges) (fun r ->
-    let selected  = active_range.value ==:. r in
+    let selected = active_range.value ==:. r in
     let _, hi = range_array.(r) in
     when_ selected [hi <-- id_to_check.value]
   ) in

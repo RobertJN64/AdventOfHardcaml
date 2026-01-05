@@ -50,7 +50,7 @@ let day11a () =
       List.init (max_fanout) (fun c ->
         let parent_match = parent_node_id.value ==:. p in
         let child_match = fanout_counter.value ==:. c in
-        let selected  = parent_match &: child_match in
+        let selected = parent_match &: child_match in
 
         let _, child_nodes = node_array.(p) in
 

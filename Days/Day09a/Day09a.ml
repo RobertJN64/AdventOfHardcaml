@@ -71,13 +71,13 @@ let day09a () =
   ];
 
   let set_x_coord = List.init (max_number_of_coords) (fun idx ->
-    let selected  = coord_counter.value ==:. idx in
+    let selected = coord_counter.value ==:. idx in
     let x, _y = coord_array.(idx) in
     when_ selected [x <-- active_coord.value]
   ) in
 
   let set_y_coord = List.init (max_number_of_coords) (fun idx ->
-    let selected  = coord_counter.value ==:. idx in
+    let selected = coord_counter.value ==:. idx in
     let _x, y = coord_array.(idx) in
     when_ selected [y <-- active_coord.value]
   ) in
