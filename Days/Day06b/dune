@@ -1,0 +1,24 @@
+(library
+ (name Day06b)
+ (modules Day06b)
+ (libraries hardcaml AdventLib)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))
+
+(executable
+ (name Day06b_v)
+ (modules Day06b_v)
+ (libraries hardcaml Day06b)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))
+
+(executable
+ (name Day06b_tb)
+ (modules Day06b_tb)
+ (libraries hardcaml hardcaml_waveterm AdventLib Day06b)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))
+
+(executable
+ (name Day06b_preprocess_input)
+ (modules Day06b_preprocess_input))
