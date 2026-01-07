@@ -15,12 +15,14 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 06  | ✅          | ❌            | ✅          | ❌            |
 | 07  | ✅          | ❌            | ✅          | ❌            |
 | 08  | ❌          | ❌            | ❌          | ❌            |
-| 09  | ✅          | ❌            |              |               |
+| 09  | ✅          | ❌            | ✅          | ❌            |
 | 10  | ✅          | ✅            | ❌          | ❌            |
 | 11  | ✅          | ❌            | ✅          | ❌            |
 | 12  | ✅          | ✅            | NA           | NA            |
 
-Many days require more memory / registers than are available on the ice40, and therefore could only run on the full AoC input in simulation
+All challenges completed except Day8 (both parts) and Day10 part 2.
+
+Many days require more memory / registers / larger multipliers than are available on the ice40, and therefore could only run on the full AoC input in simulation.
 
 Note: due to simulation performance limitations, Days 4 and 7 were only tested against a smaller grid.
 All other days were tested against the full input, although only subset/sample is included in this repository per AoC rules.
