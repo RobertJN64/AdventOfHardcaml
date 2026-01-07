@@ -11,7 +11,7 @@ Each solution receives the input text over UART and scrolls the answer across se
 | 02  | ✅          | ❌            | ✅          | ❌            |
 | 03  | ✅          | ✅            | ✅          | ❌            |
 | 04  | ✅          | ❌            | ✅          | ❌            |
-| 05  | ✅          | ❌            |              |               |
+| 05  | ✅          | ❌            | ✅          | ❌            |
 | 06  | ✅          | ❌            | ✅          | ❌            |
 | 07  | ✅          | ❌            | ✅          | ❌            |
 | 08  | ❌          | ❌            | ❌          | ❌            |
