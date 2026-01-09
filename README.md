@@ -48,7 +48,7 @@ opam install ocaml-lsp-server ocamlformat
 
 ## Simulation
 
-Run `dune build` and `dune exec ./Days/Day01a/Day01a_tb.exe`, replacing the day number as needed. This will run the Cyclesim testbench. `01a` refers to Day1 part 1, use `01b` to refer to Day1 part 2. Day12 is simply 12 as there is only one part.
+Run `dune build` and `dune exec ./Days/Day01a/Day01a_tb.exe`, replacing the day number as needed. This will run the Cyclesim testbench. `01a` refers to Day1 part 1, use `01b` to refer to Day1 part 2. Day12 is simply `12` as there is only one part.
 
 The testbench simulates the actual UART input character by character and checks the answer by reading the internal "answer" register. A sample input is provided and the answer is checked against the correct answer with an assert at the end of the testbench.
 
@@ -141,20 +141,20 @@ The FSM receives the start and end of the ID range, then pauses receiving input 
 
 ```ocaml
 let repeated_length len = 
-let first = select id_bcd (len*4-1) 0 in
-let second = select id_bcd (8*len-1) (len*4) in
-if (len*8 == width id_bcd) then (first ==: second) &: (select id_bcd (8*len-1) (8*len-4) <>:. 0)
-else
-    let rest = select id_bcd ((width id_bcd)-1) (8*len) in
-    (first ==: second) &: (rest ==:. 0) &: (select id_bcd (8*len-1) (8*len-4) <>:. 0) (* the matching section can't start wiht a 0 *)
+    let first = select id_bcd (len*4-1) 0 in
+    let second = select id_bcd (8*len-1) (len*4) in
+    if (len*8 == width id_bcd) then (first ==: second) &: (select id_bcd (8*len-1) (8*len-4) <>:. 0)
+    else
+        let rest = select id_bcd ((width id_bcd)-1) (8*len) in
+        (first ==: second) &: (rest ==:. 0) &: (select id_bcd (8*len-1) (8*len-4) <>:. 0) (* the matching section can't start wiht a 0 *)
 in
 
 (* check all length patterns from 1 to id_width/2*)
 let repeated =
-List.init ((width id_bcd)/8) (fun i -> i + 1)
-|> List.fold_left
-    (fun acc len -> acc |: repeated_length len)
-    gnd
+    List.init ((width id_bcd)/8) (fun i -> i + 1)
+    |> List.fold_left
+        (fun acc len -> acc |: repeated_length len)
+        gnd
 in
 ```
 
@@ -254,7 +254,7 @@ Day06b also requires input preprocessing - the input is "rotated" such that 1 co
 ### Days/Day07a
 
 Much like Day04, the grid is loaded one by one from UART, and then each cell is simulated to update based on its neighbors.
-The number of splitters with a beam enterting is counted. Due to simulation performance limitations a smaller grid is used,
+The number of splitters with a beam entering is counted. Due to simulation performance limitations a smaller grid is used,
 the grid size can be updated in the solution files.
 
 ### Days/Day07b
