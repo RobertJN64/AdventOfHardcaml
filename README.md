@@ -283,7 +283,7 @@ Day11b works very similarly to Day11a, but also tracks the number of paths that 
 
 ### Days/Day12
 
-Day12 relies on the input not including any "close" cases, so the number of presents requested can simply be multiplied by 8 and checked against the available area.
+Day12 relies on the input not including any "close" cases, so the number of presents requested can simply be multiplied by 8 and checked against the available area. As the solution does not depend on the shape of the presents, only the area request lines should be included in the input (as indicated in the sample).
 
 ## Other Files
 
